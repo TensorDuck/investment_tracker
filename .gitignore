@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Data analysis paths to ignore
+data/
+
+# For deploying to AWS
+package.zip
