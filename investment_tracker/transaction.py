@@ -28,13 +28,19 @@ class DynamoError(Exception):
 
 
 class FinancialRecord:
-    def __init__(self, security: str, n_shares: float, price: float):
+    def __init__(self, security: str, skey: str, n_shares: float, price: float):
         self.security = security
+        self.skey = skey
         self.n_shares = n_shares
         self.price = price
 
     def __str__(self):
-        return f"{self.security} - Shares: {self.n_shares} - Price: {self.price}"
+        return (
+            f"{self.security}.{self.skey} "
+            f"- Shares: {self.n_shares} "
+            f"- Price: {self.price} "
+            f"- Price/Share: {self.price/self.n_shares:.2f} "
+        )
 
 
 class DynamoOperator:
@@ -65,7 +71,10 @@ class DynamoOperator:
         for item in response["Items"]:
             records.append(
                 FinancialRecord(
-                    item.get("ticker"), item.get("n_shares"), item.get("cost")
+                    item.get("ticker"),
+                    item.get("skey"),
+                    item.get("n_shares"),
+                    item.get("price"),
                 )
             )
 
@@ -210,7 +219,7 @@ def main(
     """Actions for interacting with the """
     operator = DynamoOperator(user)
     if action == "list":
-        current_securities = operator.list_all(user)
+        current_securities = operator.list_all()
         for stock in current_securities:
             print(stock)
     elif action == "buy":
